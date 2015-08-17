@@ -1,0 +1,56 @@
+Test slave_sql_thread stop|start|status
+PASS: slave_sql_thread stop (Returned: 0  Expected: 0)
+PASS: slave_sql_thread stop (Returned: 1  Expected: 1)
+PASS: slave_sql_thread status (Emitted: stopped  Expected: stopped)
+PASS: slave_sql_thread start (Returned: 0  Expected: 0)
+PASS: slave_sql_thread start (Returned: 1  Expected: 1)
+PASS: slave_sql_thread status (Emitted: started  Expected: started)
+PASS: slave_sql_thread foo (Returned: 1  Expected: 1)
+
+Test slave_sql_thread sync
+PASS: slave_sql_thread sync (Returned: 1  Expected: 1)
+PASS: slave_sql_thread stop (Returned: 0  Expected: 0)
+PASS: slave_sql_thread sync (Returned: 0  Expected: 0)
+PASS: slave_sql_thread status (Emitted: stopped  Expected: stopped)
+
+Test slave_workers
+mts_toggle.sh: line 98: slave_parallel_workers.count: No such file or directory
+PASS: slave_workers get_file (Returned: 1  Expected: 1)
+PASS: slave_workers set_file (Returned: 0  Expected: 0)
+PASS: cat slave_parallel_workers.count (Emitted: 8  Expected: 8)
+PASS: slave_workers get_running (Emitted: 8  Expected: 8)
+PASS: slave_workers set_running (Returned: 1  Expected: 1)
+PASS: slave_workers set_running 0 (Returned: 0  Expected: 0)
+PASS: slave_workers get_running (Emitted: 0  Expected: 0)
+PASS: slave_workers set_file (Returned: 1  Expected: 1)
+PASS: slave_workers get_file (Returned: 0  Expected: 0)
+PASS: slave_workers foo (Returned: 1  Expected: 1)
+
+Test mts_toggle enable is nop if slave_workers get_running > 0
+PASS: mts_toggle enable (Returned: 0  Expected: 0)
+PASS: slave_workers get_running (Emitted: 8  Expected: 8)
+PASS: slave_sql_thread status (Emitted: started  Expected: started)
+
+Test mts_toggle enable fails with nop if slave_worker get_file fails
+PASS: slave_workers set_running 0 (Returned: 0  Expected: 0)
+mts_toggle.sh: line 98: slave_parallel_workers.count: No such file or directory
+PASS: mts_toggle enable (Returned: 1  Expected: 1)
+PASS: slave_sql_thread status (Emitted: started  Expected: started)
+
+Test mts_toggle disable fails with nop if slave_workers get_running = 0
+PASS: slave_workers set_running 0 (Returned: 0  Expected: 0)
+PASS: mts_toggle disable (Returned: 0  Expected: 0)
+PASS: slave_sql_thread status (Emitted: started  Expected: started)
+
+Test mts_toggle disable
+PASS: mts_toggle disable (Returned: 0  Expected: 0)
+PASS: slave_sql_thread status (Emitted: started  Expected: started)
+PASS: slave_workers get_running (Emitted: 0  Expected: 0)
+PASS: cat slave_parallel_workers.count (Emitted: 8  Expected: 8)
+
+Test mts_toggle enable
+PASS: mts_toggle enable (Returned: 0  Expected: 0)
+PASS: slave_sql_thread status (Emitted: started  Expected: started)
+PASS: slave_workers get_running (Emitted: 8  Expected: 8)
+cat: slave_parallel_workers.count: No such file or directory
+PASS: cat slave_parallel_workers.count (Returned: 1  Expected: 1)
